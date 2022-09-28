@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+// 0 ---- 4800 
+
+const int N = 3;
+typedef int[0, N-1] id_t;
+typedef int[0, 2] type_t; // 0K 1D 2G
+
+int destination = 4800;
+int x[N], v[N], a[N],targetV[N], x_pre[N];
+int scheduleDeparture[N] = {0, 20, 30}, scheduleArrival[N] = {45, 48, 50};
+type_t type[N] = {0, 1, 2}; 
+int maxDelay[3] = {30, 15, 10}, v_cruise[3] = {100, 200, 300}, v_max[3]  = {120, 250, 350}, a_start[3] = {20, 50, 60}, a_acc[3] = {10, 25, 25}, a_dec[3] = {-20, -25, -25}, a_brake[3] = {-50, -100, -100};
+
+broadcast chan go, switchStatus, updated[N];
+
+</declaration>
+	<template>
+		<name>Locomotive</name>
+		<parameter>id_t id, type_t type</parameter>
+		<declaration>clock t;
+
+void update()
+{
+	int v_pre = v[id];
+	v[id] = v[id] + a[id];	// v = v + a·dt
+	if (v[id] &lt;= 0) // Adjust v
+	{
+		v[id] = 0;
+        a[id] = 0;
+	}
+	if (v[id] &gt;= v_max[type]) // Adjust v
+	{
+		v[id] = v_max[type];
+        a[id] = 0;
+	}
+	x_pre[id] = x[id];
+	x[id] = x[id] + (v_pre + v[id])/2; // x = x + (v0+vt)/2·dt
+    if (x[id] &gt;= destination || (x[id] &gt;= 4500 &amp;&amp; v[id] == 0)) // Adjust x
+	{
+		x[id] = destination;
+        v[id] = 0;
+        targetV[id] = 0;
+	}
+}
+
+
+void checkArrival()
+{
+	int safeDis, x_next;
+    x_next = x[id] + v[id] + a[id]/2;
+    if (v[id] &gt; v_cruise[type])
+	{
+        safeDis = (v_max[type] * v_max[type] - v_cruise[type] * v_cruise[type]) / (-2 * a_dec[type]) + v_cruise[type] * v_cruise[type] / (-2 * a_brake[type]);
+    } else {
+		safeDis = v_cruise[type] * v_cruise[type] / (-2 * a_brake[type]);
+	}
+    if (destination - x_next &lt; safeDis)
+    {
+       targetV[id] = 0;
+     }
+}</declaration>
+		<location id="id0" x="-2074" y="-476">
+			<name x="-2114" y="-468">CheckArrival</name>
+		</location>
+		<location id="id1" x="-3340" y="-476">
+			<name x="-3356" y="-508">Begin</name>
+			<label kind="invariant" x="-3408" y="-459">t&lt;=scheduleDeparture[id]</label>
+		</location>
+		<location id="id2" x="-2516" y="-1100">
+			<name x="-2548" y="-1132">MaxSpeed</name>
+			<committed/>
+		</location>
+		<location id="id3" x="-2516" y="-586">
+			<name x="-2540" y="-578">Stopped</name>
+			<committed/>
+		</location>
+		<location id="id4" x="-2516" y="-850">
+			<name x="-2548" y="-834">Constant</name>
+			<committed/>
+		</location>
+		<location id="id5" x="-2881" y="-850">
+			<name x="-2906" y="-884">Switched</name>
+			<committed/>
+		</location>
+		<location id="id6" x="-2516" y="-671">
+			<name x="-2532" y="-663">Start</name>
+			<committed/>
+		</location>
+		<location id="id7" x="-2516" y="-948">
+			<name x="-2532" y="-940">Dec</name>
+			<committed/>
+		</location>
+		<location id="id8" x="-2516" y="-1036">
+			<name x="-2532" y="-1028">Brake</name>
+			<committed/>
+		</location>
+		<location id="id9" x="-2516" y="-773">
+			<name x="-2532" y="-765">Acc</name>
+			<committed/>
+		</location>
+		<location id="id10" x="-2074" y="-850">
+			<name x="-2092" y="-880">Switch</name>
+			<committed/>
+		</location>
+		<location id="id11" x="-3017" y="-850">
+			<name x="-3034" y="-884">Check</name>
+			<committed/>
+		</location>
+		<location id="id12" x="-3017" y="-476">
+			<name x="-3034" y="-519">Wait</name>
+		</location>
+		<location id="id13" x="-3340" y="-850">
+			<name x="-3350" y="-884">TimeOut</name>
+		</location>
+		<location id="id14" x="-3017" y="-1096">
+			<name x="-3034" y="-1130">Arrived</name>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-3000" y="-986">x[id] == destination</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-3238" y="-841">t&gt;scheduleArrival[id] 
+&amp;&amp; x[id]!=destination</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-3000" y="-688">t&lt;=scheduleArrival[id] 
+&amp;&amp; x[id]!=destination</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-2575" y="-501">go?</label>
+			<label kind="assignment" x="-2218" y="-501">checkArrival()</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-3272" y="-501">t&gt;=scheduleDeparture[id]</label>
+			<label kind="assignment" x="-3196" y="-476">targetV[id] = v_max[type]</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-2974" y="-867">update()</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-2167" y="-688">switchStatus?</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2703" y="-994">a[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-2380" y="-1037">v[id]==targetV[id]&amp;&amp;
+v[id]==v_max[type]</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2711" y="-739">a[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-2380" y="-680">v[id]==targetV[id]
+&amp;&amp;v[id]==0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2711" y="-875">a[id]=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-2380" y="-875">v[id]==targetV[id] 
+&amp;&amp; v[id] &gt; 0 
+&amp;&amp; v[id] &lt; v_max[type]</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2711" y="-782">a[id]=a_start[type]</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2711" y="-824">a[id]=a_acc[type]</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2708" y="-916">a[id]=a_dec[type]</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-2703" y="-952">a[id]=a_brake[type]</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-2380" y="-986">v[id]&gt;targetV[id] 
+&amp;&amp; v[id]&lt;=v_cruise[type]</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-2380" y="-926">v[id]&gt;targetV[id] 
+&amp;&amp; v[id]&gt;v_cruise[type]</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-2380" y="-799">v[id]&lt;targetV[id] 
+&amp;&amp; v[id]&gt;=v_cruise[type]</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-2380" y="-748">v[id]&lt;targetV[id] 
+&amp;&amp; v[id]&lt;v_cruise[type]</label>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<declaration>clock t;
+
+void avoidCollision()
+{
+	int i = 0;
+	while (i &lt; N)
+	{
+		if (x[i] &gt; 0 &amp;&amp; x[i] &lt; destination)
+		{
+			int j = 0, nearestDis = 9999, nearestID = -1, safeV = v_max[type[i]];
+			while (j &lt; N) // Find nearest obstacle ahead
+			{
+				int dis = x[j] - x[i];
+				if (dis &gt; 0 &amp;&amp; dis &lt; nearestDis &amp;&amp; x[j] &lt; destination)
+				{
+					nearestDis = dis;
+					nearestID = j;
+				}
+				j++;
+			}
+			if (nearestID != -1) // Calculate safeV and set targetV
+			{
+				 if (v[i] &gt; v[nearestID] &amp;&amp; v[nearestID] &gt; 0)
+				{
+                    if (a[nearestID] &gt; 0)
+					{
+						safeV = v[nearestID] + fint(sqrt(2*a[nearestID]*nearestDis));
+					} else if (a[nearestID] &lt; 0) {
+						safeV = (v[nearestID] * v[nearestID]/ (-2 * a[nearestID]) +  nearestDis) / (1 + v[nearestID] / -a[nearestID]); // adjust V
+					} else {
+						safeV = (destination - x[nearestID] + nearestDis)/(1 + v[nearestID]/-a_brake[type[nearestID]]+(destination - x[nearestID]-v[nearestID]*v[nearestID]/(-2 * a_brake[type[nearestID]]))/v[nearestID]); // adjust V
+					}
+				}
+			}
+			targetV[i] = safeV;
+		}
+		i++;
+	}
+}</declaration>
+		<location id="id15" x="-2422" y="-646">
+			<name x="-2438" y="-678">Switch</name>
+			<urgent/>
+		</location>
+		<location id="id16" x="-2617" y="-476">
+			<name x="-2652" y="-467">Command</name>
+			<urgent/>
+		</location>
+		<location id="id17" x="-2218" y="-476">
+			<name x="-2227" y="-467">Done</name>
+			<label kind="invariant" x="-2201" y="-484">t&lt;=1</label>
+		</location>
+		<init ref="id16"/>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-2448" y="-476">t&gt;=1</label>
+			<label kind="assignment" x="-2584" y="-493">avoidCollision()</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-2320" y="-586">switchStatus!</label>
+			<label kind="assignment" x="-2252" y="-527">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-2533" y="-595">go!</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+K1 = Locomotive(0, 0);
+D1 = Locomotive(1, 1);
+G1 = Locomotive(2, 2);
+
+ctrl = Controller();
+
+// List one or more processes to be composed into a system.
+system G1, D1, K1, ctrl;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) v[i]&gt;=0 and v[i]&lt;=v_max[i]</formula>
+			<comment>Obeys physical constraints</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt;  K1.Arrived and D1.Arrived and G1.Arrived</formula>
+			<comment>All locomotives eventually reach destination</comment>
+		</query>
+		<query>
+			<formula>A[] forall(i:id_t) forall(j:id_t) x_pre[i]&lt;x_pre[j] imply x[i]&lt;=x[j]</formula>
+			<comment>No collision</comment>
+		</query>
+		<query>
+			<formula>A[] not K1.TimeOut and not D1.TimeOut and not G1.TimeOut</formula>
+			<comment>Cumulated delay within deadline
+</comment>
+		</query>
+	</queries>
+</nta>

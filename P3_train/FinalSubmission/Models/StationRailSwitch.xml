@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+// 0 ---- 400——S1——2400——S2
+clock t;
+const int N = 3, M = 3; // N locos, M rails
+int protected = 0;
+
+typedef int[0, N-1] id_t; // 0-D1 1-K1 2-G1
+int departureTime[N] = {-1, 3, 1};
+int scheduleArrival[N] = {-1, 30, 13};
+int[-1, M-1] rail[N] = {-1, 1, 2}; // -1 for not using rail
+//int approached = 0; // D1 is approaching S1 or not
+
+int currentRail = -1;
+typedef int[0, M-1] id_r; // rail id
+typedef int[1, M-1] id_p; // rail for locos to park
+int[-1, N-1] rails[M] = {-1, 1, 2}; // -1 for empty rail
+chan switchTo[M], idle[N];
+broadcast chan ini, approach, predeparture, departure, switched;</declaration>
+	<template>
+		<name>ApproachingLocomotive</name>
+		<parameter>id_t id, int delayAfterS1</parameter>
+		<declaration>clock x;</declaration>
+		<location id="id0" x="-4318" y="-1292">
+			<name x="-4335" y="-1275">Decide</name>
+			<committed/>
+		</location>
+		<location id="id1" x="-4165" y="-1062">
+			<name x="-4199" y="-1045">ToArrive</name>
+			<committed/>
+		</location>
+		<location id="id2" x="-4165" y="-1292">
+			<name x="-4207" y="-1275">ApproachingS1</name>
+			<label kind="invariant" x="-4182" y="-1326">x&lt;=1</label>
+		</location>
+		<location id="id3" x="-3978" y="-1292">
+			<name x="-4012" y="-1275">PassByS1</name>
+			<committed/>
+		</location>
+		<location id="id4" x="-3808" y="-1292">
+			<name x="-3833" y="-1275">ArrivingS2</name>
+			<label kind="invariant" x="-3859" y="-1326">x&lt;=delayAfterS1</label>
+		</location>
+		<location id="id5" x="-3969" y="-1062">
+			<name x="-3995" y="-1045">ArrivingS1</name>
+			<label kind="invariant" x="-3986" y="-1096">x&lt;=1</label>
+		</location>
+		<location id="id6" x="-3816" y="-1062">
+			<name x="-3842" y="-1045">ArriveS1</name>
+			<committed/>
+		</location>
+		<location id="id7" x="-3366" y="-1062">
+			<name x="-3383" y="-1045">Arrived</name>
+		</location>
+		<location id="id8" x="-3374" y="-1291">
+			<name x="-3400" y="-1275">TimeOut</name>
+		</location>
+		<location id="id9" x="-3595" y="-1292">
+			<name x="-3655" y="-1275">CheckS2ArrivalTime</name>
+			<committed/>
+		</location>
+		<location id="id10" x="-3587" y="-1062">
+			<name x="-3646" y="-1045">CheckS1ArrivalTime</name>
+			<committed/>
+		</location>
+		<location id="id11" x="-4505" y="-1292">
+			<name x="-4522" y="-1275">Cruise</name>
+			<label kind="invariant" x="-4522" y="-1326">x&lt;=1</label>
+		</location>
+		<location id="id12" x="-4318" y="-1062">
+			<name x="-4343" y="-1045">Braking</name>
+			<label kind="invariant" x="-4335" y="-1028">x&lt;=1</label>
+		</location>
+		<init ref="id11"/>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-4267" y="-1079">x&gt;=1</label>
+			<label kind="synchronisation" x="-4284" y="-1062">approach?</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id12"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-4437" y="-1317">x&gt;=1</label>
+			<label kind="synchronisation" x="-4454" y="-1292">approach?</label>
+			<label kind="assignment" x="-4369" y="-1292">x=0</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-3544" y="-1309">t&gt;delayAfterS1+2</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-3655" y="-1232">t&lt;=delayAfterS1+2</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-3493" y="-1079">t&lt;=3</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-3561" y="-1139">t&gt;3</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-3757" y="-1309">x&gt;=delayAfterS1</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-3774" y="-1079">protected=0,
+rails[currentRail]=id</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id5"/>
+			<label kind="select" x="-4122" y="-1105">e:id_p</label>
+			<label kind="guard" x="-4122" y="-1088">rails[e]==-1</label>
+			<label kind="synchronisation" x="-4122" y="-1062">switchTo[e]!</label>
+			<label kind="assignment" x="-4122" y="-1045">x=0, rail[id]=e, 
+protected=1</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-3910" y="-1079">x&gt;=1</label>
+			<label kind="synchronisation" x="-3927" y="-1062">approach?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-3935" y="-1309">x=0,
+protected=0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-4097" y="-1309">x&gt;=1</label>
+			<label kind="synchronisation" x="-4114" y="-1292">approach?</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-4284" y="-1292">switchTo[0]!</label>
+			<label kind="assignment" x="-4284" y="-1317">protected=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>DeparturingLocomotive</name>
+		<parameter>id_t id, int delayAfterS1</parameter>
+		<declaration>clock y;</declaration>
+		<location id="id13" x="-858" y="-42">
+			<name x="-875" y="-25">Wait</name>
+			<label kind="invariant" x="-926" y="-76">t&lt;=departureTime[id]-1</label>
+		</location>
+		<location id="id14" x="-637" y="-42">
+			<name x="-671" y="-25">CheckDeparture</name>
+			<committed/>
+		</location>
+		<location id="id15" x="-58" y="-42">
+			<name x="-91" y="-25">ArrivingS2</name>
+			<label kind="invariant" x="-108" y="-85">y&lt;=delayAfterS1</label>
+		</location>
+		<location id="id16" x="119" y="-42">
+			<name x="53" y="-25">CheckS2ArrivalTime</name>
+			<committed/>
+		</location>
+		<location id="id17" x="324" y="-42">
+			<name x="299" y="-25">Arrived</name>
+		</location>
+		<location id="id18" x="120" y="102">
+			<name x="95" y="119">TimeOut</name>
+		</location>
+		<location id="id19" x="-450" y="-42">
+			<name x="-501" y="-25">WaitForDeparture</name>
+			<label kind="invariant" x="-467" y="-76">y&lt;=1</label>
+		</location>
+		<location id="id20" x="-280" y="-42">
+			<name x="-314" y="-25">Departure</name>
+			<committed/>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id15"/>
+			<label kind="assignment" x="-246" y="-59">y=0, rails[rail[id]]=-1, 
+rail[id]=-1, protected=0</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-382" y="-59">y&gt;=1</label>
+			<label kind="synchronisation" x="-399" y="-42">departure?</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id19"/>
+			<label kind="guard" x="-595" y="-59">protected==0</label>
+			<label kind="synchronisation" x="-595" y="-42">switchTo[rail[id]]!</label>
+			<label kind="assignment" x="-595" y="-76">y=0, protected=1</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-714" y="25">protected == 1</label>
+			<label kind="assignment" x="-1037" y="8">departureTime[id]=departureTime[id]+1</label>
+			<nail x="-748" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id18"/>
+			<label kind="guard" x="128" y="8">t&gt;scheduleArrival[id]</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="guard" x="146" y="-59">t&lt;=scheduleArrival[id]</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-25" y="-59">y&gt;=delayAfterS1</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-824" y="-59">t&gt;=departureTime[id]-1</label>
+			<label kind="synchronisation" x="-798" y="-42">predeparture?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Rail</name>
+		<parameter>const int[0,M-1] id</parameter>
+		<declaration>clock z;</declaration>
+		<location id="id21" x="-1190" y="-366">
+			<name x="-1198" y="-357">Idle</name>
+		</location>
+		<location id="id22" x="-935" y="-366">
+			<name x="-960" y="-357">Switched</name>
+			<label kind="invariant" x="-977" y="-399">currentRail==id</label>
+		</location>
+		<location id="id23" x="-935" y="-204">
+			<name x="-960" y="-195">Switching</name>
+			<label kind="invariant" x="-952" y="-238">z&lt;=1</label>
+		</location>
+		<location id="id24" x="-1190" y="-204">
+			<name x="-1224" y="-187">SwitchedTo</name>
+			<committed/>
+		</location>
+		<location id="id25" x="-1062" y="-511">
+			<name x="-1071" y="-501">Init</name>
+			<urgent/>
+		</location>
+		<init ref="id25"/>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-807" y="-382">switchTo[id]?</label>
+			<nail x="-816" y="-425"/>
+			<nail x="-816" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-994" y="-468">currentRail==id</label>
+			<label kind="synchronisation" x="-977" y="-450">ini?</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id21"/>
+			<label kind="guard" x="-1224" y="-468">currentRail!=id</label>
+			<label kind="synchronisation" x="-1156" y="-450">ini?</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-1113" y="-229">idle[currentRail]!</label>
+			<label kind="assignment" x="-1122" y="-204">z=0, currentRail=-1</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-1284" y="-306">switchTo[id]?</label>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-969" y="-289">z&gt;=1</label>
+			<label kind="synchronisation" x="-926" y="-289">switched?</label>
+			<label kind="assignment" x="-927" y="-306">currentRail=id</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-1088" y="-366">idle[id]?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<declaration>clock a;</declaration>
+		<location id="id26" x="-468" y="-119">
+			<name x="-501" y="-153">Departure</name>
+			<urgent/>
+		</location>
+		<location id="id27" x="-467" y="-17">
+			<name x="-484" y="-8">Done</name>
+			<label kind="invariant" x="-484" y="-51">a&lt;=1</label>
+		</location>
+		<location id="id28" x="-221" y="-17">
+			<name x="-263" y="-8">PreDeparture</name>
+			<urgent/>
+		</location>
+		<location id="id29" x="-655" y="-119">
+			<name x="-665" y="-153">Init</name>
+			<urgent/>
+		</location>
+		<location id="id30" x="-221" y="-119">
+			<name x="-246" y="-153">Approach</name>
+			<urgent/>
+		</location>
+		<init ref="id29"/>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id29"/>
+			<label kind="select" x="-670" y="-43">e:id_r</label>
+			<label kind="guard" x="-705" y="-17">currentRail == -1</label>
+			<label kind="assignment" x="-697" y="0">currentRail=e</label>
+			<nail x="-705" y="-17"/>
+			<nail x="-594" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-382" y="-136">departure!</label>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-212" y="-85">approach!</label>
+		</transition>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-612" y="-119">currentRail != -1</label>
+			<label kind="synchronisation" x="-578" y="-144">ini!</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-365" y="-119">a&gt;=1</label>
+			<label kind="synchronisation" x="-459" y="-76">switched!</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-391" y="-34">predeparture!</label>
+			<label kind="assignment" x="-442" y="-17">a=0</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+D1 = ApproachingLocomotive(0, 15);
+K1 = DeparturingLocomotive(1, 26);
+G1 = DeparturingLocomotive(2, 12);
+
+Rail0 = Rail(0);
+Rail1 = Rail(1);
+Rail2 = Rail(2);
+
+ctrl = Controller();
+
+// List one or more processes to be composed into a system.
+system ctrl, D1, K1, G1, Rail0, Rail1, Rail2;
+//system D1, Rail0, Rail1, Rail2;</system>
+	<queries>
+		<query>
+			<formula>A[] not ctrl.Init imply Rail0.Switched + Rail0.Switching + Rail1.Switched + Rail1.Switching + Rail2.Switched + Rail2.Switching == 1</formula>
+			<comment>Exactly one rail is switched or switching to at the same time</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; D1.Arrived and K1.Arrived and G1.Arrived</formula>
+			<comment>All locomotives can always eventually reach the destination</comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; D1.PassByS1 or D1.ArriveS1</formula>
+			<comment>(For reference)Approaching locomotive can always eventually either pass by or arrive at S1</comment>
+		</query>
+		<query>
+			<formula>A[] not D1.TimeOut and not K1.TimeOut and not G1.TimeOut</formula>
+			<comment>Cumulated delay of all locomotives within deadline</comment>
+		</query>
+		<query>
+			<formula>A[] (K1.Departure imply currentRail==rail[1]) and (G1.Departure imply currentRail==rail[2])</formula>
+			<comment>Departuring locomotives always eventually depart as scheduled through the corresponding rail</comment>
+		</query>
+		<query>
+			<formula>A[] D1.PassByS1 imply currentRail==0 </formula>
+			<comment>Passing-by D1 can always eventually cross S1 through the main rail</comment>
+		</query>
+		<query>
+			<formula>A[] D1.ArriveS1 imply (currentRail==rail[0] and rails[currentRail]==-1)</formula>
+			<comment>Arriving locmootive can eventually arrive at S1 at an empty rail</comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>UPPAAL cannot handle deadlock predicate for models with guarded broadcast receivers.</comment>
+		</query>
+	</queries>
+</nta>

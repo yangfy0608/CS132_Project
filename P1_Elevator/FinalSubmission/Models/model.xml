@@ -1,0 +1,778 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>
+broadcast chan bup;
+broadcast chan bleftopen;
+broadcast chan f1up;
+broadcast chan f1down;
+broadcast chan f1leftopen;
+broadcast chan f1rightopen;
+broadcast chan f2up;
+broadcast chan f2down;
+broadcast chan f2leftopen;
+broadcast chan f2rightopen;
+broadcast chan f3down;
+broadcast chan f3leftopen;
+broadcast chan f3rightopen;
+
+</declaration>
+	<template>
+		<name x="5" y="5">FB</name>
+		<declaration>// Place local declarations here.
+clock t;</declaration>
+		<location id="id0" x="-255" y="-365">
+			<name x="-280" y="-399">standby</name>
+		</location>
+		<location id="id1" x="-93" y="-161">
+			<name x="-127" y="-195">uprequest</name>
+		</location>
+		<location id="id2" x="-425" y="-170">
+			<name x="-435" y="-204">opendoor</name>
+			<urgent/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-297" y="-187">bleftopen?</label>
+			<label kind="assignment" x="-263" y="-161">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-178" y="-280">bup!</label>
+		</transition>
+	</template>
+	<template>
+		<name>F1</name>
+		<declaration>clock t;</declaration>
+		<location id="id3" x="-408" y="42">
+			<name x="-442" y="59">leftdooropen</name>
+			<urgent/>
+		</location>
+		<location id="id4" x="-187" y="-306">
+			<name x="-212" y="-340">standby</name>
+		</location>
+		<location id="id5" x="-510" y="-187">
+			<name x="-544" y="-221">uprequest</name>
+		</location>
+		<location id="id6" x="127" y="-170">
+			<name x="102" y="-204">downrequest</name>
+		</location>
+		<location id="id7" x="-195" y="-153">
+			<name x="-238" y="-187">change_state</name>
+		</location>
+		<location id="id8" x="25" y="51">
+			<name x="15" y="17">rightdooropen</name>
+			<urgent/>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="guard" x="255" y="-85">t&gt;=10</label>
+			<nail x="374" y="-153"/>
+			<nail x="204" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-697" y="-136">t&gt;=10</label>
+			<nail x="-765" y="-161"/>
+			<nail x="-493" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="43" y="-81">f1rightopen?</label>
+			<label kind="assignment" x="43" y="-64">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-59" y="-51">f1rightopen?</label>
+			<label kind="assignment" x="-34" y="-34">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-144" y="-25">f1rightopen?</label>
+			<label kind="assignment" x="-118" y="-8">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-323" y="-85">f1leftopen?</label>
+			<label kind="assignment" x="-314" y="-68">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-51" y="-178">f1up!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-348" y="-187">f1down!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-314" y="-34">f1leftopen?</label>
+			<label kind="assignment" x="-306" y="-17">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-34" y="-255">f1down!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-442" y="-68">f1leftopen?</label>
+			<label kind="assignment" x="-408" y="-51">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-365" y="-272">f1up!</label>
+		</transition>
+	</template>
+	<template>
+		<name>F2</name>
+		<declaration>clock t;</declaration>
+		<location id="id9" x="25" y="51">
+			<name x="15" y="17">rightdooropen</name>
+			<urgent/>
+		</location>
+		<location id="id10" x="-187" y="-306">
+			<name x="-212" y="-340">standby</name>
+		</location>
+		<location id="id11" x="-408" y="42">
+			<name x="-442" y="59">leftdooropen</name>
+			<urgent/>
+		</location>
+		<location id="id12" x="127" y="-170">
+			<name x="102" y="-204">downrequest</name>
+		</location>
+		<location id="id13" x="-195" y="-153">
+			<name x="-238" y="-187">change_state</name>
+		</location>
+		<location id="id14" x="-510" y="-187">
+			<name x="-544" y="-221">uprequest</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="guard" x="255" y="-85">t&gt;=10</label>
+			<nail x="374" y="-153"/>
+			<nail x="204" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-697" y="-136">t&gt;=10</label>
+			<nail x="-765" y="-161"/>
+			<nail x="-493" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="43" y="-81">f2rightopen?</label>
+			<label kind="assignment" x="43" y="-64">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-85" y="-59">f2rightopen?</label>
+			<label kind="assignment" x="-306" y="0">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-144" y="-25">f2rightopen?</label>
+			<label kind="assignment" x="-118" y="-8">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-323" y="-85">f2leftopen?</label>
+			<label kind="assignment" x="-314" y="-68">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-51" y="-178">f2up!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-348" y="-187">f2down!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-323" y="-17">f2leftopen?</label>
+			<label kind="assignment" x="-42" y="-42">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-34" y="-255">f2down!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-442" y="-68">f2leftopen?</label>
+			<label kind="assignment" x="-408" y="-51">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-365" y="-272">f2up!</label>
+		</transition>
+	</template>
+	<template>
+		<name>F3</name>
+		<declaration>clock t;</declaration>
+		<location id="id15" x="25" y="51">
+			<name x="15" y="17">rightdooropen</name>
+			<urgent/>
+		</location>
+		<location id="id16" x="-187" y="-306">
+			<name x="-212" y="-340">standby</name>
+		</location>
+		<location id="id17" x="-408" y="42">
+			<name x="-442" y="59">leftdooropen</name>
+			<urgent/>
+		</location>
+		<location id="id18" x="-187" y="-144">
+			<name x="-212" y="-178">downrequest</name>
+		</location>
+		<init ref="id16"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="255" y="-85">t&gt;=10</label>
+			<nail x="374" y="-153"/>
+			<nail x="204" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-697" y="-136">t&gt;=10</label>
+			<nail x="-765" y="-161"/>
+			<nail x="-493" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-127" y="-68">f3rightopen?</label>
+			<label kind="assignment" x="-102" y="-51">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-365" y="-42">f3leftopen?</label>
+			<label kind="assignment" x="-357" y="-17">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-212" y="-238">f3down!</label>
+		</transition>
+	</template>
+	<template>
+		<name>Elevator1</name>
+		<declaration>clock t;
+int targetleft;
+int stairleft=1;
+int movingleft = 0;
+int upleft = 0;
+int downleft = 0;
+int stayleft = 0;
+void upordown(int x){
+    targetleft = x;
+    if(stairleft&lt;targetleft)
+    {
+        upleft = 1;
+        movingleft = 1;
+    }
+    if(stairleft=targetleft)
+    {
+        stayleft = 1;
+    }
+    if(stairleft&gt;targetleft)
+    {
+        downleft = 1;
+        movingleft = 1;
+    }
+}</declaration>
+		<location id="id19" x="-969" y="-858">
+			<name x="-979" y="-892">standby</name>
+		</location>
+		<location id="id20" x="-968" y="-620">
+			<name x="-985" y="-612">move</name>
+			<committed/>
+		</location>
+		<location id="id21" x="-1028" y="-544">
+			<name x="-1038" y="-578">up</name>
+			<label kind="invariant" x="-1038" y="-527">t&lt;=3</label>
+		</location>
+		<location id="id22" x="-918" y="-535">
+			<name x="-928" y="-569">down</name>
+			<label kind="invariant" x="-928" y="-518">t&lt;=3</label>
+		</location>
+		<location id="id23" x="-1233" y="-544">
+			<committed/>
+		</location>
+		<location id="id24" x="-756" y="-535">
+			<committed/>
+		</location>
+		<location id="id25" x="-977" y="-408">
+			<name x="-960" y="-417">opendoor</name>
+			<committed/>
+		</location>
+		<location id="id26" x="-357" y="705">
+		</location>
+		<location id="id27" x="-1215" y="-247">
+			<name x="-1258" y="-280">bopen</name>
+			<label kind="invariant" x="-1258" y="-263">t&lt;=10</label>
+		</location>
+		<location id="id28" x="-1053" y="-247">
+			<name x="-1096" y="-272">f1open</name>
+			<label kind="invariant" x="-1105" y="-255">t&lt;=10</label>
+		</location>
+		<location id="id29" x="-900" y="-247">
+			<name x="-910" y="-281">f2open</name>
+			<label kind="invariant" x="-901" y="-263">t&lt;=10</label>
+		</location>
+		<location id="id30" x="-747" y="-247">
+			<name x="-748" y="-272">f3open</name>
+			<label kind="invariant" x="-739" y="-255">t&lt;=10</label>
+		</location>
+		<location id="id31" x="-977" y="-153">
+			<committed/>
+		</location>
+		<init ref="id19"/>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-1003" y="-527">stayleft==1</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-943" y="-815">f3down?</label>
+			<label kind="assignment" x="-960" y="-798">upordown(3)</label>
+			<nail x="-841" y="-739"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-918" y="-722">f2down?</label>
+			<label kind="assignment" x="-943" y="-705">upordown(2)</label>
+			<nail x="-918" y="-739"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-960" y="-807">f2up?</label>
+			<label kind="assignment" x="-960" y="-790">upordown(2)</label>
+			<nail x="-960" y="-748"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-1045" y="-782">f1down?</label>
+			<label kind="assignment" x="-1045" y="-765">upordown(1)</label>
+			<nail x="-1011" y="-748"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-1079" y="-765">f1up?</label>
+			<label kind="assignment" x="-1096" y="-748">upordown(1)</label>
+			<nail x="-1072" y="-748"/>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-1105" y="-799">bup?</label>
+			<label kind="assignment" x="-1147" y="-782">upordown(0)</label>
+			<nail x="-1130" y="-756"/>
+		</transition>
+		<transition>
+			<source ref="id31"/>
+			<target ref="id19"/>
+			<nail x="-552" y="-153"/>
+			<nail x="-569" y="-850"/>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-833" y="-212">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-952" y="-229">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-1037" y="-229">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-1147" y="-221">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-849" y="-349">stairleft==3</label>
+			<label kind="synchronisation" x="-858" y="-332">f3leftopen!</label>
+			<label kind="assignment" x="-824" y="-315">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id29"/>
+			<label kind="guard" x="-960" y="-340">stairleft==2</label>
+			<label kind="synchronisation" x="-960" y="-323">f2leftopen!</label>
+			<label kind="assignment" x="-943" y="-298">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id28"/>
+			<label kind="guard" x="-1035" y="-361">stairleft==1</label>
+			<label kind="synchronisation" x="-1035" y="-344">f1leftopen!</label>
+			<label kind="assignment" x="-1035" y="-327">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-1197" y="-361">stairleft==0</label>
+			<label kind="synchronisation" x="-1197" y="-344">bleftopen!</label>
+			<label kind="assignment" x="-1197" y="-327">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-960" y="-475">targetleft==stairleft</label>
+			<label kind="assignment" x="-952" y="-459">movingleft=0</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id25"/>
+			<label kind="guard" x="-1080" y="-484">targetleft==stairleft</label>
+			<label kind="assignment" x="-1080" y="-467">movingleft=0</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id22"/>
+			<label kind="assignment" x="-823" y="-505">stairleft=stairleft-1</label>
+			<nail x="-841" y="-475"/>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-850" y="-603">targetleft&lt;stairleft&amp;&amp;t&gt;=3</label>
+			<nail x="-917" y="-543"/>
+			<nail x="-832" y="-594"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id21"/>
+			<label kind="assignment" x="-1215" y="-510">stairleft=stairleft+1</label>
+			<nail x="-1131" y="-476"/>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-1232" y="-603">targetleft&gt;stairleft&amp;&amp;t&gt;=3</label>
+			<nail x="-1131" y="-620"/>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id22"/>
+			<label kind="guard" x="-952" y="-612">downleft==1</label>
+			<label kind="assignment" x="-952" y="-595">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="guard" x="-1054" y="-620">upleft==1</label>
+			<label kind="assignment" x="-1037" y="-603">t=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Elevator2</name>
+		<declaration>clock t;
+int targetright;
+int stairright=1;
+int movingright = 0;
+int upright = 0;
+int downright = 0;
+int stayright = 0;
+void upordown(int x){
+    targetright = x;
+    if(stairright&lt;targetright)
+    {
+        upright = 1;
+        movingright = 1;
+    }
+    if(stairright=targetright)
+    {
+        stayright = 1;
+    }
+    if(stairright&gt;targetright)
+    {
+        downright = 1;
+        movingright = 1;
+    }
+}</declaration>
+		<location id="id32" x="348" y="663">
+		</location>
+		<location id="id33" x="-619" y="-595">
+			<name x="-636" y="-587">move</name>
+			<committed/>
+		</location>
+		<location id="id34" x="-628" y="-383">
+			<name x="-611" y="-392">opendoor</name>
+			<committed/>
+		</location>
+		<location id="id35" x="-620" y="-833">
+			<name x="-630" y="-867">standby</name>
+		</location>
+		<location id="id36" x="-679" y="-519">
+			<name x="-689" y="-553">up</name>
+			<label kind="invariant" x="-689" y="-502">t&lt;=3</label>
+		</location>
+		<location id="id37" x="-569" y="-510">
+			<name x="-579" y="-544">down</name>
+			<label kind="invariant" x="-579" y="-493">t&lt;=3</label>
+		</location>
+		<location id="id38" x="-884" y="-519">
+			<committed/>
+		</location>
+		<location id="id39" x="-407" y="-510">
+			<committed/>
+		</location>
+		<location id="id40" x="-816" y="-246">
+			<name x="-859" y="-271">f1open</name>
+			<label kind="invariant" x="-868" y="-254">t&lt;=10</label>
+		</location>
+		<location id="id41" x="-629" y="-238">
+			<name x="-688" y="-263">f2open</name>
+			<label kind="invariant" x="-688" y="-246">t&lt;=10</label>
+		</location>
+		<location id="id42" x="-484" y="-238">
+			<name x="-485" y="-263">f3open</name>
+			<label kind="invariant" x="-476" y="-246">t&lt;=10</label>
+		</location>
+		<location id="id43" x="-628" y="-128">
+			<committed/>
+		</location>
+		<init ref="id35"/>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-654" y="-502">stayright==1</label>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-518" y="-782">f3down?</label>
+			<label kind="assignment" x="-518" y="-765">upordown(3)</label>
+			<nail x="-476" y="-722"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-569" y="-714">f2down?</label>
+			<label kind="assignment" x="-595" y="-688">upordown(2)</label>
+			<nail x="-544" y="-731"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-612" y="-756">f2up?</label>
+			<label kind="assignment" x="-629" y="-739">upordown(2)</label>
+			<nail x="-603" y="-722"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-714" y="-756">f1down?</label>
+			<label kind="assignment" x="-714" y="-739">upordown(1)</label>
+			<nail x="-688" y="-722"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-773" y="-748">f1up?</label>
+			<label kind="assignment" x="-790" y="-722">upordown(1)</label>
+			<nail x="-756" y="-731"/>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id35"/>
+			<nail x="-203" y="-128"/>
+			<nail x="-220" y="-825"/>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-620" y="-212">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-544" y="-195">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-748" y="-178">t&gt;=10</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-552" y="-348">stairright==3</label>
+			<label kind="synchronisation" x="-544" y="-331">f3rightopen!</label>
+			<label kind="assignment" x="-518" y="-314">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id41"/>
+			<label kind="guard" x="-663" y="-348">stairright==2</label>
+			<label kind="synchronisation" x="-671" y="-331">f2rightopen!</label>
+			<label kind="assignment" x="-637" y="-314">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id40"/>
+			<label kind="guard" x="-807" y="-348">stairright==1</label>
+			<label kind="synchronisation" x="-807" y="-331">f1rightopen!</label>
+			<label kind="assignment" x="-790" y="-314">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-611" y="-450">targetright==stairright</label>
+			<label kind="assignment" x="-603" y="-434">movingright=0</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-731" y="-459">targetright==stairright</label>
+			<label kind="assignment" x="-731" y="-442">movingright=0</label>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id37"/>
+			<label kind="assignment" x="-474" y="-480">stairright=stairright-1</label>
+			<nail x="-492" y="-450"/>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id39"/>
+			<label kind="guard" x="-501" y="-578">targetright&lt;stairright&amp;&amp;t&gt;=3</label>
+			<nail x="-568" y="-518"/>
+			<nail x="-483" y="-569"/>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id36"/>
+			<label kind="assignment" x="-866" y="-485">stairright=stairright+1</label>
+			<nail x="-782" y="-451"/>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id38"/>
+			<label kind="guard" x="-901" y="-578">targetright&gt;stairright&amp;&amp;t&gt;=3</label>
+			<nail x="-782" y="-595"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id37"/>
+			<label kind="guard" x="-603" y="-587">downright==1</label>
+			<label kind="assignment" x="-603" y="-570">t=0</label>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id36"/>
+			<label kind="guard" x="-705" y="-595">upright==1</label>
+			<label kind="assignment" x="-688" y="-578">t=0</label>
+		</transition>
+	</template>
+	<system>
+// List one or more processes to be composed into a system.
+system FB,F1,F2,F3,Elevator1,Elevator2;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; (Elevator1.stairleft==0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator1.stairleft==1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator1.stairleft==2)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator1.stairleft==3)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator2.stairright==1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator2.stairright==2)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (Elevator2.stairright==3)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (Elevator2.stairright != 0)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (Elevator2.stairright != 4)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (Elevator1.stairleft != 4)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] !(Elevator1.downleft == 1 &amp;&amp; Elevator1.upleft == 1)||(Elevator1.downleft==1 &amp;&amp; Elevator1.stayleft==1)||(Elevator1.upleft==1 &amp;&amp; Elevator1.stayleft==1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] !(Elevator2.downright==1 &amp;&amp; Elevator2.upright==1)||(Elevator2.downright==1 &amp;&amp; Elevator2.stayright==1)||(Elevator2.upright==1 &amp;&amp; Elevator2.stayright==1)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] !(FB.opendoor &amp;&amp; F1.leftdooropen)||(FB.opendoor &amp;&amp; F2.leftdooropen)||(FB.opendoor &amp;&amp; F3.leftdooropen)||(F1.leftdooropen &amp;&amp; F2.leftdooropen)||(F1.leftdooropen &amp;&amp; F3.leftdooropen)||(F2.leftdooropen &amp;&amp; F3.leftdooropen)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] !(F1.rightdooropen &amp;&amp; F2.rightdooropen)||(F1.rightdooropen &amp;&amp; F3.rightdooropen)||(F2.rightdooropen &amp;&amp; F3.rightdooropen)</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
