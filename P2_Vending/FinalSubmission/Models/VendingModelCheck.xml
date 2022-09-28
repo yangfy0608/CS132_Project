@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan purchase,insert;
+clock t;</declaration>
+	<template>
+		<name x="5" y="5">Vending</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-314" y="-144">
+			<name x="-348" y="-178">Standby</name>
+		</location>
+		<location id="id1" x="-170" y="-144">
+			<name x="-204" y="-187">Payment</name>
+			<label kind="invariant" x="-195" y="-170">t&lt;=30</label>
+		</location>
+		<location id="id2" x="0" y="-144">
+			<name x="-25" y="-178">Success</name>
+		</location>
+		<location id="id3" x="-170" y="-42">
+			<name x="-195" y="-25">Timeout</name>
+			<urgent/>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-136" y="-272">t = 0</label>
+			<nail x="-170" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<nail x="-314" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-161" y="-119">t&gt;=30</label>
+			<label kind="assignment" x="-161" y="-93">t = 0</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-119" y="-161">insert?</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-280" y="-170">purchase?</label>
+			<label kind="assignment" x="-229" y="-144">t = 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Customer</name>
+		<location id="id4" x="-280" y="-34">
+			<name x="-290" y="-68">Start</name>
+		</location>
+		<location id="id5" x="-119" y="-34">
+			<name x="-127" y="-76">Pay</name>
+			<label kind="invariant" x="-136" y="-59">t&lt;=30</label>
+		</location>
+		<location id="id6" x="25" y="-34">
+			<name x="15" y="-68">Succeed</name>
+			<urgent/>
+		</location>
+		<location id="id7" x="-119" y="93">
+			<name x="-136" y="110">Leave</name>
+			<urgent/>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-255" y="25">t = 0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-110" y="8">t&gt;=30</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-68" y="-59">insert!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-229" y="-51">purchase!</label>
+			<label kind="assignment" x="-161" y="-34">t=0</label>
+		</transition>
+	</template>
+	<system>
+system Vending,Customer;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; Customer.Succeed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Customer.Pay imply Customer.Leave</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Vending.Success</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Vending.Timeout
+</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

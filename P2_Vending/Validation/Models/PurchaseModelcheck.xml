@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan coke,fanta,success,less,timeout;
+int coin,need,insert;
+clock t;</declaration>
+	<template>
+		<name x="5" y="5">Vending</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-408" y="-144">
+			<name x="-418" y="-178">Start</name>
+		</location>
+		<location id="id1" x="-255" y="-144">
+			<name x="-265" y="-178">Payment</name>
+			<label kind="invariant" x="-265" y="-127">t&lt;=30</label>
+		</location>
+		<location id="id2" x="-255" y="-17">
+			<name x="-265" y="-51">Timeout</name>
+			<urgent/>
+		</location>
+		<location id="id3" x="-102" y="-144">
+			<name x="-112" y="-178">Success</name>
+			<urgent/>
+		</location>
+		<location id="id4" x="-408" y="-289">
+			<name x="-418" y="-323">Init</name>
+		</location>
+		<location id="id5" x="-102" y="-17">
+			<name x="-112" y="-51">Payagain</name>
+			<urgent/>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id1"/>
+			<label kind="assignment" x="-152" y="-17">t = 0</label>
+			<nail x="-170" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-178" y="-93">less!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-433" y="-246">coin = 50,insert = 0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-263" y="-255">t = 0</label>
+			<nail x="-263" y="-280"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-229" y="-144">insert &gt; need</label>
+			<label kind="synchronisation" x="-237" y="-161">success!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<nail x="-408" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-255" y="-114">t&gt;=30</label>
+			<label kind="synchronisation" x="-255" y="-97">timeout!</label>
+			<label kind="assignment" x="-255" y="-80">t = 0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-348" y="-93">fanta?</label>
+			<label kind="assignment" x="-348" y="-76">t = 0</label>
+			<nail x="-331" y="-85"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-390" y="-161">coke?</label>
+			<label kind="assignment" x="-390" y="-144">t = 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Customer</name>
+		<location id="id6" x="-425" y="-136">
+			<name x="-435" y="-170">Start</name>
+		</location>
+		<location id="id7" x="-281" y="-136">
+			<name x="-298" y="-179">Pay</name>
+			<label kind="invariant" x="-306" y="-162">t&lt;=30</label>
+			<committed/>
+		</location>
+		<location id="id8" x="-136" y="-17">
+			<name x="-146" y="-51">Succeed</name>
+			<urgent/>
+		</location>
+		<location id="id9" x="-281" y="-18">
+			<name x="-291" y="-52">Leave</name>
+			<urgent/>
+		</location>
+		<location id="id10" x="-136" y="-136">
+			<name x="-146" y="-170">Check</name>
+		</location>
+		<init ref="id6"/>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-238" y="-93">timeout?</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-194" y="-195">less?</label>
+			<label kind="assignment" x="-194" y="-178">t = 0</label>
+			<nail x="-212" y="-221"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-136" y="-93">success?</label>
+			<label kind="assignment" x="-136" y="-76">coin += (insert - need) ,insert = 0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-247" y="-144">insert += 5</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id6"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-281" y="-111">t&gt;=30</label>
+			<label kind="synchronisation" x="-281" y="-94">timeout?</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-391" y="-221">fanta!</label>
+			<label kind="assignment" x="-391" y="-204">t = 0 ,need = 6</label>
+			<nail x="-374" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-391" y="-153">coke!</label>
+			<label kind="assignment" x="-391" y="-136">t = 0 ,need = 4</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+
+// List one or more processes to be composed into a system.
+system Vending,Customer;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; Customer.Check</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Customer.Succeed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Vending.Timeout </formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Vending.Success</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A&lt;&gt; Customer.Pay imply Customer.Leave</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
